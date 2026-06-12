@@ -1,0 +1,18 @@
+# Bağımlılıklar ve derleme çıktıları — repoya girmez
+node_modules/
+verum-core/target/
+verum-token/artifacts/
+verum-token/cache/
+
+# Ortam değişkenleri ve gizli anahtarlar — ASLA repoya girmez
+.env
+.env.*
+*.key
+*.pem
+secrets/
+
+# Editör / işletim sistemi artıkları
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

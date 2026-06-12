@@ -1,0 +1,20 @@
+{
+  "name": "verum-token",
+  "version": "1.0.0",
+  "description": "Whitepaper v1.0 tokenomics'inin Ethereum üzerinde gerçek uygulaması. Bu, VERUM'un **listelenebilirlik yolundaki ilk gerçek adımıdır** — Rust çekirdeği (verum-core) gelecekteki kendi ana ağımızın prototipi olarak paralel geliştirilmeye devam eder.",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "hardhat": "^2.28.6",
+    "solc": "^0.8.24"
+  }
+}

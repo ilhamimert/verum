@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERUM — Blok Gezgini</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --surface: #121826;
+    --surface-2: #1a2233;
+    --border: #232d42;
+    --text: #e6ebf4;
+    --text-dim: #8b96ab;
+    --accent: #4fd1c5;
+    --accent-dim: #2c7a73;
+    --gold: #d4af6a;
+    --danger: #e06c75;
+    --ok: #98c379;
+    --radius: 10px;
+    --mono: "Cascadia Code", "Consolas", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, #1a2c3a55, transparent);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+    padding: 1.6rem 2rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    font-size: 1.7rem; font-weight: 800; letter-spacing: 0.18em;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .brand small { font-size: 0.8rem; letter-spacing: 0.05em; color: var(--text-dim); -webkit-text-fill-color: var(--text-dim); }
+  .pills { display: flex; gap: 0.6rem; margin-left: auto; flex-wrap: wrap; }
+  .pill {
+    font-size: 0.78rem; padding: 0.35rem 0.8rem; border-radius: 99px;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+  }
+  .pill b { color: var(--accent); font-family: var(--mono); }
+  .pill.valid b { color: var(--ok); }
+
+  main {
+    display: grid; grid-template-columns: 380px 1fr; gap: 1.4rem;
+    padding: 1.4rem 2rem 3rem; max-width: 1400px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.2rem 1.3rem; margin-bottom: 1.4rem;
+  }
+  .card h2 {
+    font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-dim); margin-bottom: 1rem;
+  }
+
+  button {
+    background: var(--accent-dim); color: var(--text); border: none; cursor: pointer;
+    padding: 0.55rem 1rem; border-radius: 7px; font-size: 0.88rem; font-weight: 600;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:hover { background: var(--accent); color: #06281f; }
+  button:active { transform: scale(0.97); }
+  button.gold { background: #6b5836; }
+  button.gold:hover { background: var(--gold); color: #2a1f00; }
+  button.primary { width: 100%; margin-top: 0.6rem; }
+
+  input, select {
+    width: 100%; padding: 0.55rem 0.7rem; margin-bottom: 0.6rem;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 7px;
+    color: var(--text); font-size: 0.86rem; font-family: var(--mono);
+  }
+  input:focus, select:focus { outline: 1px solid var(--accent-dim); }
+  label { font-size: 0.76rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem; }
+
+  .wallet-item {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 7px;
+    padding: 0.7rem 0.8rem; margin-bottom: 0.6rem;
+  }
+  .wallet-item .addr { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); word-break: break-all; }
+  .wallet-item .bal { font-size: 1.15rem; font-weight: 700; margin-top: 0.3rem; }
+  .wallet-item .bal span { font-size: 0.75rem; color: var(--gold); }
+  .wallet-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .wallet-actions button { font-size: 0.75rem; padding: 0.35rem 0.7rem; }
+
+  .block {
+    border: 1px solid var(--border); border-left: 3px solid var(--accent-dim);
+    border-radius: 7px; padding: 0.85rem 1rem; margin-bottom: 0.8rem;
+    background: var(--surface-2);
+  }
+  .block.genesis { border-left-color: var(--gold); }
+  .block-head { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+  .block-no { font-weight: 800; font-size: 1.05rem; }
+  .block-meta { font-size: 0.74rem; color: var(--text-dim); }
+  .hash { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); word-break: break-all; margin-top: 0.35rem; }
+  .hash b { color: var(--accent); font-weight: normal; }
+  .tx {
+    font-family: var(--mono); font-size: 0.74rem; margin-top: 0.5rem;
+    padding: 0.45rem 0.6rem; background: var(--bg); border-radius: 5px;
+    display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: baseline;
+  }
+  .tx .amount { color: var(--gold); font-weight: 700; }
+  .tx .arrow { color: var(--accent); }
+  .ai-score { color: var(--ok); font-size: 0.74rem; }
+
+  .empty { color: var(--text-dim); font-size: 0.84rem; font-style: italic; }
+  #toast {
+    position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%) translateY(120%);
+    background: var(--surface-2); border: 1px solid var(--accent-dim); color: var(--text);
+    padding: 0.7rem 1.3rem; border-radius: 8px; font-size: 0.86rem;
+    transition: transform 0.25s ease; max-width: 90vw; z-index: 10;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.error { border-color: var(--danger); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">VERUM <small>VRM · Proof of AI · Testnet</small></div>
+  <div class="pills">
+    <span class="pill">Blok <b id="p-blocks">—</b></span>
+    <span class="pill">Bekleyen <b id="p-pending">—</b></span>
+    <span class="pill valid">Zincir <b id="p-valid">—</b></span>
+  </div>
+</header>
+
+<main>
+  <!-- SOL: CÜZDAN PANELİ -->
+  <section>
+    <div class="card">
+      <h2>Cüzdanlarım</h2>
+      <div id="wallet-list"><p class="empty">Henüz cüzdan yok — bir tane oluştur.</p></div>
+      <button class="primary" onclick="createWallet()">+ Yeni Cüzdan Oluştur</button>
+    </div>
+
+    <div class="card">
+      <h2>VRM Gönder</h2>
+      <label>Gönderen</label>
+      <select id="send-from"></select>
+      <label>Alıcı adresi</label>
+      <input id="send-to" placeholder="VRM...">
+      <label>Miktar (VRM)</label>
+      <input id="send-amount" type="number" min="0" step="0.001" placeholder="0.0">
+      <button class="primary" onclick="sendVrm()">İmzala ve Gönder</button>
+    </div>
+
+    <div class="card">
+      <h2>Madencilik — PoAI</h2>
+      <p class="empty" style="margin-bottom:0.7rem">Bekleyen işlemleri 7 AI node'unun oyuyla bloğa dönüştür.</p>
+      <button class="primary gold" onclick="mineBlock()">⛏ Blok Kaz (AI Konsensüsü)</button>
+    </div>
+  </section>
+
+  <!-- SAĞ: GEZGİN -->
+  <section>
+    <div class="card">
+      <h2>Bekleyen İşlemler (Mempool)</h2>
+      <div id="mempool"><p class="empty">Mempool boş.</p></div>
+    </div>
+
+    <div class="card">
+      <h2>Blok Zinciri</h2>
+      <div id="chain"></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<script>
+const wallets = []; // {address, public_key} — sayfa oturumu boyunca
+
+function toast(msg, isError = false) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = isError ? "show error" : "show";
+  setTimeout(() => { el.className = ""; }, 3500);
+}
+
+async function api(path, options) {
+  const res = await fetch(path, options);
+  const body = await res.json();
+  if (!body.success) throw new Error(body.error || "bilinmeyen hata");
+  return body.data;
+}
+
+function short(hash, n = 14) { return hash ? hash.slice(0, n) + "…" : ""; }
+function shortAddr(a) {
+  if (!a) return "";
+  return a.length > 20 ? a.slice(0, 10) + "…" + a.slice(-6) : a;
+}
+
+async function createWallet() {
+  try {
+    const info = await api("/api/wallet", { method: "POST" });
+    wallets.push(info);
+    toast("Cüzdan oluşturuldu: " + shortAddr(info.address));
+    render();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function requestFaucet(address) {
+  try {
+    const data = await api("/api/faucet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address }),
+    });
+    toast(data.message);
+    render();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function sendVrm() {
+  const from = document.getElementById("send-from").value;
+  const to = document.getElementById("send-to").value.trim();
+  const amount = parseFloat(document.getElementById("send-amount").value);
+  if (!from) return toast("Önce cüzdan oluştur.", true);
+  if (!to) return toast("Alıcı adresi gerekli.", true);
+  if (!(amount > 0)) return toast("Geçerli bir miktar gir.", true);
+  try {
+    const data = await api("/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, amount }),
+    });
+    toast("İşlem imzalandı ve mempool'a eklendi: " + short(data.tx_id, 8));
+    document.getElementById("send-amount").value = "";
+    render();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function mineBlock() {
+  try {
+    const block = await api("/api/mine", { method: "POST" });
+    toast(`Blok #${block.header.index} onaylandı — AI skoru ${block.header.ai_consensus_score.toFixed(3)}`);
+    render();
+  } catch (e) { toast(e.message, true); }
+}
+
+async function render() {
+  try {
+    const [status, chainData, mempoolData] = await Promise.all([
+      api("/api/status"), api("/api/chain"), api("/api/mempool"),
+    ]);
+
+    document.getElementById("p-blocks").textContent = status.block_count;
+    document.getElementById("p-pending").textContent = status.pending_count;
+    document.getElementById("p-valid").textContent = status.chain_valid ? "GEÇERLİ" : "BOZUK";
+
+    // Cüzdanlar + bakiyeler
+    const listEl = document.getElementById("wallet-list");
+    const fromEl = document.getElementById("send-from");
+    if (wallets.length === 0) {
+      listEl.innerHTML = '<p class="empty">Henüz cüzdan yok — bir tane oluştur.</p>';
+      fromEl.innerHTML = "";
+    } else {
+      const balances = await Promise.all(
+        wallets.map(w => api("/api/balance/" + encodeURIComponent(w.address)))
+      );
+      listEl.innerHTML = wallets.map((w, i) => `
+        <div class="wallet-item">
+          <div class="addr">${w.address}</div>
+          <div class="bal">${balances[i].balance.toFixed(3)} <span>VRM</span></div>
+          <div class="wallet-actions">
+            <button onclick="requestFaucet('${w.address}')">💧 Musluk (100 VRM)</button>
+            <button onclick="navigator.clipboard.writeText('${w.address}');toast('Adres kopyalandı')">Kopyala</button>
+          </div>
+        </div>`).join("");
+      const selected = fromEl.value;
+      fromEl.innerHTML = wallets.map(w =>
+        `<option value="${w.address}" ${w.address === selected ? "selected" : ""}>${shortAddr(w.address)}</option>`
+      ).join("");
+    }
+
+    // Mempool
+    document.getElementById("mempool").innerHTML = mempoolData.length === 0
+      ? '<p class="empty">Mempool boş.</p>'
+      : mempoolData.map(tx => `
+          <div class="tx">
+            <span>${shortAddr(tx.from)}</span><span class="arrow">→</span>
+            <span>${shortAddr(tx.to)}</span>
+            <span class="amount">${tx.amount} VRM</span>
+            <span style="color:var(--text-dim)">ücret ${tx.fee.toFixed(4)}</span>
+          </div>`).join("");
+
+    // Zincir (yeni blok üstte)
+    document.getElementById("chain").innerHTML = [...chainData].reverse().map(b => `
+      <div class="block ${b.header.index === 0 ? "genesis" : ""}">
+        <div class="block-head">
+          <span class="block-no">#${b.header.index}${b.header.index === 0 ? " · GENESIS" : ""}</span>
+          <span class="block-meta">${new Date(b.header.timestamp * 1000).toLocaleString("tr-TR")}</span>
+          <span class="ai-score">AI skoru: ${b.header.ai_consensus_score.toFixed(3)}</span>
+          <span class="block-meta">${b.transactions.length} işlem</span>
+        </div>
+        <div class="hash">hash: <b>${short(b.hash, 28)}</b></div>
+        <div class="hash">önceki: ${short(b.header.previous_hash, 28)}</div>
+        ${b.transactions.map(tx => `
+          <div class="tx">
+            <span>${shortAddr(tx.from)}</span><span class="arrow">→</span>
+            <span>${shortAddr(tx.to)}</span>
+            <span class="amount">${tx.amount} VRM</span>
+          </div>`).join("")}
+      </div>`).join("");
+  } catch (e) {
+    toast("Sunucuya ulaşılamıyor: " + e.message, true);
+  }
+}
+
+render();
+setInterval(render, 5000);
+</script>
+</body>
+</html>
