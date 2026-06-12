@@ -1,6 +1,14 @@
+<p align="center">
+  <img src="assets/logo.jpg" alt="VERUM logo" width="280">
+</p>
+
 # VERUM (VRM)
 
+[![CI](https://github.com/ilhamimert/verum/actions/workflows/ci.yml/badge.svg)](https://github.com/ilhamimert/verum/actions/workflows/ci.yml)
+
 > *"Gerçeği gizlemeden ispat et."*
+
+🇬🇧 [English README](README.en.md)
 
 **VERUM**, AI konsensüsü (PoAI), sıfır-bilgi gizliliği (ZK-Shield) ve gerçek
 dünya varlık bağlama (RealAnchor) konseptlerini birleştiren deneysel bir
